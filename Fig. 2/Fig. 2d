@@ -1,0 +1,34 @@
+#################========script for Fig. 2d #######=========
+
+library(readxl)
+library(ggplot2)
+library(dplyr)
+
+dat<-read_excel("/Users/arijitmukherjee/Downloads/WCD_plot.xlsx",sheet = "Sheet2",col_names = T,skip = 0)
+head(dat)
+dat$MRM<-as.factor(dat$MRM)
+p<-ggplot(dat,aes(x=Coverage,y=`1-WCD`))+
+  geom_point(size=3,alpha=0.6)+
+  theme_classic()+
+  geom_text_repel(aes(label=name),size=3)+
+  xlab("Coverage (%)")+
+  theme(axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        axis.title.x = element_text(size = 16))
+p
+saveRDS(p,"plot_WCD.rds")
+ggsave(
+  "WCD.tiff",
+  plot = last_plot(),
+  device = NULL,
+  path = NULL,
+  scale = 1,
+  width = 7,
+  height = 8,
+  units = "in",
+  dpi = 300,
+)
+dev.off()
+
+
