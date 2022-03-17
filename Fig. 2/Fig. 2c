@@ -1,0 +1,40 @@
+#Fig. 2B correlation among the samples
+corr<-read_excel("/Users/arijitmukherjee/Downloads/TB15 protein raw Abundance (1).xlsx",sheet = "Proteins",col_names = T,skip = 0)
+head(corr)
+colnames(corr)<-c("Protein","MG1","MG2","MG3","MG4","MG5")
+head(corr)
+corr<-na.omit(corr)
+dim(corr)
+data<-log2(corr[,-1])
+# Function to add histograms
+panel.hist <- function(x, ...) {
+  usr <- par("usr")
+  on.exit(par(usr))
+  par(usr = c(usr[1:2], 0, 1.5))
+  his <- hist(x, plot = FALSE)
+  breaks <- his$breaks
+  nB <- length(breaks)
+  y <- his$counts
+  y <- y/max(y)
+  rect(breaks[-nB], 0, breaks[-1], y, col = rgb(0, 1, 1, alpha = 0.5), ...)
+  # lines(density(x), col = 2, lwd = 2) # Uncomment to add density lines
+}
+
+# Function to add correlation coefficients
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
+  usr <- par("usr")
+  on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  Cor <- abs(cor(x, y)) # Remove abs function if desired
+  txt <- paste0(prefix, format(c(Cor, 0.123456789), digits = digits)[1])
+  if(missing(cex.cor)) {
+    cex.cor <- 0.4 / strwidth(txt)
+  }
+  text(0.5, 0.5, txt,
+       cex = 1 + cex.cor * Cor) # Resize the text by level of correlation
+}
+
+#save the image
+tiff("Correlation_plot.tiff",compression = "none")
+pairs(data,diag.panel = panel.hist,upper.panel = panel.cor)
+dev.off()
